@@ -52,6 +52,6 @@ extern "C" __global__ void huber_error_backward(
 
     dfdy = -dfdx;
 
-    grad_lhs[i] += dfdx * go;
-    grad_rhs[i] += dfdy * go;
+    atomicAdd(grad_lhs + i, dfdx * go);
+    atomicAdd(grad_rhs + i, dfdy * go);
 }

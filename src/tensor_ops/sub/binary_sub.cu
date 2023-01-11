@@ -34,8 +34,8 @@ extern "C" __global__ void binary_sub_backward(
     auto go = grad_out[i];
 
     float dfdx = 1.0;
-    grad_lhs[i] += dfdx * go;
+    atomicAdd(grad_lhs + i, dfdx * go);
 
     float dfdy = -1.0;
-    grad_rhs[i] += dfdy * go;
+    atomicAdd(grad_rhs + i, dfdy * go);
 }

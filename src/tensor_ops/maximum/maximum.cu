@@ -46,6 +46,6 @@ extern "C" __global__ void maximum_backward(
         dfdy = 0.5;
     }
 
-    grad_lhs[i] += dfdx * go;
-    grad_rhs[i] += dfdy * go;
+    atomicAdd(grad_lhs + i, dfdx * go);
+    atomicAdd(grad_rhs + i, dfdy * go);
 }
