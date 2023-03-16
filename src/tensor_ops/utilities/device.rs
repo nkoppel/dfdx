@@ -65,6 +65,7 @@ pub trait Device<E: Dtype>:
     + UnaryKernel<super::super::negate::NegateKernelOp, E>
     + UnaryKernel<super::super::relu::ReLUKernelOp, E>
     + UnaryKernel<super::super::gelu::GeLUKernelOp, E>
+    + UnaryKernel<super::super::prelu::LeakyReLUKernelOp<E>, E>
     + UnaryKernel<super::super::sigmoid::SigmoidKernelOp, E>
     + UnaryKernel<super::super::sin::SinKernelOp, E>
     + UnaryKernel<super::super::sqrt::SqrtKernelOp, E>
@@ -78,6 +79,7 @@ pub trait Device<E: Dtype>:
     + BinaryKernel<super::super::huber_error::HuberErrorKernelOp<E>, E>
     + BinaryKernel<super::super::maximum::MaximumKernelOp, E>
     + BinaryKernel<super::super::minimum::MinimumKernelOp, E>
+    + BinaryKernel<super::super::prelu::PReLUKernelOp, E>
     + crate::tensor_ops::axpy::AxpyKernel<E>
 {
 }
