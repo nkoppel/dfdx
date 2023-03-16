@@ -19,44 +19,54 @@ pub struct LeakyReLUKernelOp<E> {
     alpha: E,
 }
 
-pub trait PReLU<Rhs>: HasErr {
-    fn try_prelu(self, rhs: Rhs) -> Result<Self, Self::Err>;
-
-    fn prelu(self, rhs: Rhs) -> Self {
-        self.try_prelu(rhs).unwrap()
-    }
+pub fn leaky_relu<S: Shape, E: Dtype, D: UnaryKernel<LeakyReLUKernelOp<E>, E>, T: Tape<E, D>>(
+    t: Tensor<S, E, D, T>,
+    alpha: E,
+) -> Tensor<S, E, D, T> {
+    t.leaky_relu(alpha)
 }
 
-impl<S: Shape, E: Dtype, D, LhsTape: Tape<E, D>, R> PReLU<Tensor<S, E, D, R>>
-    for Tensor<S, E, D, LhsTape>
-where
-    D: BinaryKernel<PReLUKernelOp, E>,
-    LhsTape: Merge<R>,
-{
-    fn try_prelu(self, rhs: Tensor<S, E, D, R>) -> Result<Self, Self::Err> {
-        try_binary_op(PReLUKernelOp, self, rhs)
+impl<S: Shape, E: Dtype, D: UnaryKernel<LeakyReLUKernelOp<E>, E>, T: Tape<E, D>> Tensor<S, E, D, T> {
+    /// See [relu]
+    pub fn leaky_relu(self, alpha: E) -> Self {
+        self.try_leaky_relu(alpha).unwrap()
     }
-}
-
-pub trait LeakyRelu: HasErr + HasDtype {
-    fn try_leaky_relu(self, rhs: Self::Dtype) -> Result<Self, Self::Err>;
-
-    fn leaky_relu(self, rhs: Self::Dtype) -> Self {
-        self.try_leaky_relu(rhs).unwrap()
-    }
-}
-
-impl<S: Shape, E: Dtype, D: UnaryKernel<LeakyReLUKernelOp<E>, E>, T: Tape<E, D>> LeakyRelu
-    for Tensor<S, E, D, T>
-{
-    fn try_leaky_relu(self, alpha: E) -> Result<Self, Self::Err> {
+    /// See [relu]
+    pub fn try_leaky_relu(self, alpha: E) -> Result<Self, D::Err> {
         try_unary_op(LeakyReLUKernelOp { alpha }, self)
     }
 }
 
+pub fn prelu<S: Shape, E: Dtype, D: BinaryKernel<PReLUKernelOp, E>, LTape, RTape>(
+    t: Tensor<S, E, D, LTape>,
+    alpha: Tensor<S, E, D, RTape>,
+) -> Tensor<S, E, D, LTape>
+where
+    LTape: Tape<E, D> + Merge<RTape>,
+    RTape: Tape<E, D>,
+{
+    t.prelu(alpha)
+}
+
+impl<S: Shape, E: Dtype, D: BinaryKernel<PReLUKernelOp, E>, LTape: Tape<E, D>>
+    Tensor<S, E, D, LTape>
+{
+    pub fn prelu<RTape: Tape<E, D>>(self, alpha: Tensor<S, E, D, RTape>) -> Self
+    where
+        LTape: Merge<RTape>,
+    {
+        self.try_prelu(alpha).unwrap()
+    }
+    pub fn try_prelu<RTape>(self, prob: Tensor<S, E, D, RTape>) -> Result<Self, D::Err>
+    where
+        RTape: Tape<E, D>,
+        LTape: Merge<RTape>,
+    {
+        try_binary_op(PReLUKernelOp, self, prob)
+    }
+}
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::{tensor::*, tensor_ops::*, tests::*};
 
     #[test]
