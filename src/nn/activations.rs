@@ -36,6 +36,29 @@ activation_impls!(Square, try_square, #[doc="Calls [square()]."]);
 activation_impls!(Sqrt, try_sqrt, #[doc="Calls [sqrt()]."]);
 activation_impls!(Abs, try_abs, #[doc="Calls [abs()]."]);
 
+/// Calls [leaky_relu()].
+#[derive(Debug, Clone, Copy)]
+pub struct LeakyReLU<E: Dtype>(pub E);
+
+impl<E: Dtype> Default for LeakyReLU<E> {
+    fn default() -> Self {
+        // Same as pytorch default 
+        LeakyReLU(E::from_f32(1e-2).unwrap())
+    }
+}
+
+impl<E: Dtype> ZeroSizedModule for LeakyReLU<E> {}
+impl<E: Dtype> NonMutableModule for LeakyReLU<E> {}
+
+impl<S: Shape, E: Dtype, D: Device<E>, T: Tape<E, D>> Module<Tensor<S, E, D, T>> for LeakyReLU<E> {
+    type Output = Tensor<S, E, D, T>;
+    type Error = D::Err;
+
+    fn try_forward(&self, input: Tensor<S, E, D, T>) -> Result<Self::Output, D::Err> {
+        input.try_leaky_relu(self.0)
+    }
+}
+
 /// Calls [softmax()].
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Softmax;
