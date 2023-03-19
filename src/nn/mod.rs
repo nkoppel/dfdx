@@ -200,7 +200,7 @@ mod linear;
 mod npz;
 mod pool2d;
 mod pool_global;
-mod prelu;
+// mod prelu;
 mod repeated;
 mod residual;
 #[cfg(feature = "safetensors")]
