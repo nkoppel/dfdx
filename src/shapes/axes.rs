@@ -6,6 +6,17 @@ pub trait Axes: 'static + Default + Copy + Clone {
     fn as_array() -> Self::Array;
 }
 
+/// Represents an empty list of axes
+#[derive(Clone, Copy, Debug, Default)]
+pub struct NoAxes;
+impl Axes for NoAxes {
+    type Array = [isize; 0];
+    #[inline(always)]
+    fn as_array() -> Self::Array {
+        []
+    }
+}
+
 /// A singular axis, e.g. `Axis<0>` or `Axis<1>`
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Axis<const I: isize>;
@@ -102,7 +113,7 @@ macro_rules! impl_has_axis {
     };
 }
 
-impl HasAxes<Axis<0>> for () {
+impl<S: Shape> HasAxes<NoAxes> for S {
     #[inline(always)]
     fn size(&self) -> usize {
         1

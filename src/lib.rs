@@ -52,7 +52,7 @@
 //! # use dfdx::prelude::*;
 //! # let dev: Cpu = Default::default();
 //! # let mlp = dev.build_module::<Linear<10, 5>, f32>();
-//! # let y_true: Tensor<Rank1<5>, f32, _> = dev.sample_normal().softmax();
+//! # let y_true: Tensor<Rank1<5>, f32, _> = dev.sample_normal().softmax::<Axis<0>>();
 //! // allocate gradients [ZeroGrads::alloc_grads]
 //! let grads = mlp.alloc_grads();
 //!
@@ -72,7 +72,7 @@
 //! # use dfdx::prelude::*;
 //! # let dev: Cpu = Default::default();
 //! # let mlp = dev.build_module::<Linear<10, 5>, f32>();
-//! # let y_true = dev.sample_normal::<Rank1<5>>().softmax();
+//! # let y_true = dev.sample_normal::<Rank1<5>>().softmax::<Axis<0>>();
 //! # let y = mlp.forward(dev.zeros::<Rank1<10>>().trace(Gradients::leaky()));
 //! // compute cross entropy loss
 //! let loss = cross_entropy_with_logits_loss(y, y_true);
@@ -85,7 +85,7 @@
 //! # use dfdx::{prelude::*, optim::*};
 //! # let dev: Cpu = Default::default();
 //! # let mut mlp = dev.build_module::<Linear<10, 5>, f32>();
-//! # let y_true = dev.sample_normal::<Rank1<5>>().softmax();
+//! # let y_true = dev.sample_normal::<Rank1<5>>().softmax::<Axis<0>>();
 //! # let y = mlp.forward(dev.zeros::<Rank1<10>>().trace(Gradients::leaky()));
 //! # let loss = cross_entropy_with_logits_loss(y, y_true);
 //! # let mut gradients: Gradients<f32, Cpu> = loss.backward();

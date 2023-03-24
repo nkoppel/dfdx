@@ -185,12 +185,12 @@ mod tests {
 
         let t = dev.tensor([-2.0, -1.0, 0.0, 1.0, 2.0]);
         let r1 = Softmax.forward_mut(t.clone());
-        let r2 = t.softmax();
+        let r2 = t.softmax::<Axis<0>>();
         assert_eq!(r1.array(), r2.array());
 
         let t = dev.tensor([[-2.0, -1.0, 0.0], [1.0, 2.0, 3.0]]);
         let r1 = Softmax.forward_mut(t.clone());
-        let r2 = t.softmax::<crate::shapes::Axis<1>>();
+        let r2 = t.softmax::<Axis<1>>();
         assert_eq!(r1.array(), r2.array());
     }
 }

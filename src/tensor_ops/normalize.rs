@@ -58,7 +58,7 @@ mod tests {
     fn test_1d_normalize_axis_last() {
         let dev: TestDevice = Default::default();
         let a: Tensor<_, TestDtype, _> = dev.tensor([-2.0, 0.0, 5.0]);
-        let r = a.leaky_trace().normalize(1e-5);
+        let r = a.leaky_trace().normalize::<Axis<0>>(1e-5);
         assert_close(&r.array(), &[-1.0190487, -0.3396829, 1.3587316]);
         // NOTE: .exp() so we can make sure normalize is using result grad properly
         let g = r.exp().mean().backward();

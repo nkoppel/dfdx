@@ -305,8 +305,8 @@ macro_rules! shape {
 impl Shape for () {
     const NUM_DIMS: usize = 0;
     type Concrete = [usize; 0];
-    type AllAxes = Axis<0>;
-    type LastAxis = Axis<0>;
+    type AllAxes = NoAxes;
+    type LastAxis = NoAxes;
     #[inline(always)]
     fn concrete(&self) -> Self::Concrete {
         []

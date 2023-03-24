@@ -49,7 +49,7 @@ mod tests {
     fn test_softmax_1d() {
         let dev: TestDevice = Default::default();
         let a: Tensor<_, TestDtype, _> = dev.tensor([-2.0, -1.0, 0.0, 1.0, 2.0]);
-        let r = a.leaky_trace().softmax();
+        let r = a.leaky_trace().softmax::<Axis<0>>();
         assert_close(
             &r.array(),
             &[0.011656232, 0.031684924, 0.086128555, 0.23412168, 0.6364087],

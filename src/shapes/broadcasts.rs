@@ -12,9 +12,9 @@ pub trait ReduceShape<Ax>: Sized + HasAxes<Ax> + ReduceShapeTo<Self::Reduced, Ax
     type Reduced: Shape + BroadcastShapeTo<Self, Ax>;
 }
 
-impl ReduceShapeTo<(), Axis<0>> for () {}
-impl ReduceShape<Axis<0>> for () {
-    type Reduced = ();
+impl<S: Shape> ReduceShapeTo<S, NoAxes> for S {}
+impl<S: Shape> ReduceShape<NoAxes> for S {
+    type Reduced = S;
 }
 impl<Src: Shape, Dst: Shape + ReduceShapeTo<Src, Ax>, Ax> BroadcastShapeTo<Dst, Ax> for Src {}
 
@@ -97,10 +97,10 @@ impl<S: Shape + ReduceBottomDimsTo<T>, T: Shape> BroadcastBottomDimsTo<S> for T 
 }
 
 impl ReduceTopDimsTo<()> for () {
-    type Ax = Axis<0>;
+    type Ax = NoAxes;
 }
 impl ReduceBottomDimsTo<()> for () {
-    type Ax = Axis<0>;
+    type Ax = NoAxes;
 }
 
 macro_rules! broadcast_bottom_top {

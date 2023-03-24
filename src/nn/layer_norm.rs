@@ -82,7 +82,7 @@ impl<const M: usize, E: Dtype, D: Device<E>, T: Tape<E, D>> Module<Tensor<Rank1<
     type Error = D::Err;
 
     fn try_forward(&self, x: Tensor<Rank1<M>, E, D, T>) -> Result<Self::Output, D::Err> {
-        x.try_normalize(self.epsilon)?
+        x.try_normalize::<Axis<0>>(self.epsilon)?
             .try_mul(self.gamma.clone())?
             .try_add(self.beta.clone())
     }

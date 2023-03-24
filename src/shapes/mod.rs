@@ -31,7 +31,7 @@ pub(crate) use replace_dim::{RemoveDimTo, ReplaceDimTo};
 pub(crate) use same_numel::AssertSameNumel;
 pub(crate) use slice::SliceShape;
 
-pub use axes::{Axes2, Axes3, Axes4, Axes5, Axes6, Axis, HasAxes};
+pub use axes::{NoAxes, Axes2, Axes3, Axes4, Axes5, Axes6, Axis, HasAxes};
 pub use shape::{Array, Const, ConstDim, Dim};
 pub use shape::{ConstShape, HasShape, Shape};
 pub use shape::{Dtype, HasDtype, HasUnitType, Unit};
