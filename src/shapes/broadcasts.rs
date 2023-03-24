@@ -74,6 +74,60 @@ macro_rules! broadcast_to_all {
 
 broadcast_to_all!([] [] [] [A B C D E F] [() Axis Axes2 Axes3 Axes4 Axes5 Axes6]);
 
+pub trait ReduceTopDimsTo<S: Shape>: ReduceShapeTo<S, Self::Ax> {
+    type Ax: Axes;
+}
+
+// pub trait ReduceBottomDimsTo<S: Shape>: ReduceShapeTo<S, Self::Ax> {
+    // type Ax: Axes;
+// }
+
+pub trait BroadcastTopDimsTo<S>: BroadcastShapeTo<S, Self::Ax> {
+    type Ax: Axes;
+}
+impl<S: Shape + ReduceTopDimsTo<T>, T: Shape> BroadcastTopDimsTo<S> for T {
+    type Ax = S::Ax;
+}
+
+// pub trait BroadcastBottomDimsTo<S: Shape + ReduceBottomDimsTo<Self>>: Shape {}
+// impl<S: Shape + ReduceBottomDimsTo<T>, T: Shape> BroadcastBottomDimsTo<S> for T {}
+
+macro_rules! broadcast_top {
+    ($ax:ty, [] [$($sh2:ident)*]) => {
+        impl<$($sh2: Dim,)*> ReduceTopDimsTo<()> for ($($sh2,)*) {
+            type Ax = $ax;
+        }
+    };
+    ($ax:ty, [$($sh1:ident)+] [$($sh2:ident)*]) => {
+        impl<$($sh2: Dim,)*> ReduceTopDimsTo<($($sh1,)*)> for ($($sh2,)*) {
+            type Ax = $ax;
+        }
+        impl ReduceTopDimsTo<[usize; {length!($($sh1)*)}]> for [usize; {length!($($sh2)*)}] {
+            type Ax = $ax;
+        }
+    }
+}
+
+macro_rules! broadcast_all_top {
+    ($ax:ty, $sh1:tt $sh2:tt []) => {
+        broadcast_top!($ax, $sh1 $sh2);
+    };
+    ($ax:ty, [$($sh1:ident)*] [$($sh2:ident)*] [$sh3:ident $($shs3:ident)*]) => {
+        broadcast_all_top!($ax, [$($sh1)* $sh3] [$($sh2)* $sh3] [$($shs3)*]);
+        broadcast_top!($ax, [$($sh1)*] [$($sh2)*]);
+    }
+}
+
+impl ReduceTopDimsTo<()> for () {
+    type Ax = Axis<0>;
+}
+broadcast_all_top!(Axis<0>, [] [A] [B C D E F]);
+broadcast_all_top!(Axes2<0, 1>, [] [A B] [C D E F]);
+broadcast_all_top!(Axes3<0, 1, 2>, [] [A B C] [D E F]);
+broadcast_all_top!(Axes4<0, 1, 2, 3>, [] [A B C D] [E F]);
+broadcast_all_top!(Axes5<0, 1, 2, 3, 4>, [] [A B C D E] [F]);
+broadcast_all_top!(Axes6<0, 1, 2, 3, 4, 5>, [] [A B C D E F] []);
+
 /// Internal implementation for broadcasting strides
 pub trait BroadcastStridesTo<S: Shape, Ax>: Shape + BroadcastShapeTo<S, Ax> {
     fn check(&self, dst: &S);

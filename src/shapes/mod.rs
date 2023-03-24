@@ -19,7 +19,7 @@ mod shape;
 
 pub(crate) use axes::Axes;
 pub(crate) use broadcasts::{
-    BroadcastShapeTo, BroadcastStridesTo, ReduceShape, ReduceShapeTo, ReduceStridesTo,
+    BroadcastShapeTo, BroadcastStridesTo, ReduceShape, ReduceShapeTo, ReduceStridesTo, ReduceTopDimsTo, BroadcastTopDimsTo,
 };
 pub(crate) use permutes::{PermuteShapeTo, PermuteStridesTo};
 pub(crate) use realize::RealizeShapeTo;

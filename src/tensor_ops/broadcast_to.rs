@@ -41,6 +41,52 @@ pub trait BroadcastTo: HasErr + HasShape {
     ) -> Result<Self::WithShape<Dst>, Self::Err>
     where
         Self::Shape: BroadcastShapeTo<Dst, Ax>;
+
+    /// Same as [BroadcastTo::broadcast], but the axes to broadcast are automatically chosen
+    /// to be the top axes of the resulting tensor.
+    /// ```rust
+    /// # use dfdx::prelude::*;
+    /// # let dev: Cpu = Default::default();
+    /// let a: Tensor<Rank1<3>, f32, _> = dev.tensor([1., 2., 3.,]);
+    ///
+    /// // broadcast axis 0
+    /// let b = a.clone().broadcast_top_dims::<Rank2<3, 3>>();
+    /// assert_eq!(b.array(), [[1., 2., 3.]; 3]);
+    ///
+    /// // broadcast axes 0 and 1
+    /// let b = a.clone().broadcast_top_dims::<Rank3<3, 3, 3>>();
+    /// assert_eq!(b.array(), [[[1., 2., 3.]; 3]; 3]);
+    /// ```
+    fn broadcast_top_dims<Dst: ConstShape>(self) -> Self::WithShape<Dst>
+    where
+        Self::Shape: BroadcastTopDimsTo<Dst>,
+    {
+        self.try_broadcast_like(&Default::default()).unwrap()
+    }
+    /// Fallible version of [BroadcastTo::broadcast_top_dims]
+    fn try_broadcast_top_dims<Dst: ConstShape>(self) -> Result<Self::WithShape<Dst>, Self::Err>
+    where
+        Self::Shape: BroadcastTopDimsTo<Dst>,
+    {
+        self.try_broadcast_like(&Default::default())
+    }
+    /// Same as [BroadcastTo::broadcast_top_dims], but the target shape is given
+    fn broadcast_top_dims_like<Dst: Shape>(self, dst: &Dst) -> Self::WithShape<Dst>
+    where
+        Self::Shape: BroadcastTopDimsTo<Dst>,
+    {
+        self.try_broadcast_like(dst).unwrap()
+    }
+    /// fallible version of [BroadcastTo::broadcast_top_dims_like]
+    fn try_broadcast_top_dims_like<Dst: Shape>(
+        self,
+        dst: &Dst,
+    ) -> Result<Self::WithShape<Dst>, Self::Err>
+    where
+        Self::Shape: BroadcastTopDimsTo<Dst>
+    {
+        self.try_broadcast_like(dst)
+    }
 }
 
 impl<S: Shape, E: Unit, D: DeviceStorage, T: Tape<E, D>> BroadcastTo for Tensor<S, E, D, T> {
