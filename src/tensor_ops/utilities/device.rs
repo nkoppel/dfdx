@@ -35,6 +35,7 @@ pub trait Device<E: Dtype>:
     + super::super::select_and_gather::ReplaceDimKernel<E>
     + super::super::select_and_gather::RemoveDimKernel<E>
     + super::super::choose::ChooseKernel<E>
+    + super::super::slice::SliceKernel<E>
 
     // matmuls
     + super::super::matmul::VecMatKernel<E>
@@ -78,6 +79,12 @@ pub trait Device<E: Dtype>:
     + UnaryKernel<super::super::tanh::TanhKernelOp, E>
     + UnaryKernel<super::super::pow::PowfKernelOp<E>, E>
     + UnaryKernel<super::super::pow::PowiKernelOp, E>
+
+    // to_dtype
+    + super::super::to_dtype::ToDtypeKernel<f32, E>
+    + super::super::to_dtype::ToDtypeKernel<f64, E>
+    + super::super::to_dtype::ToDtypeKernel<E, f32>
+    + super::super::to_dtype::ToDtypeKernel<E, f64>
 
     // binary
     + BinaryKernel<super::super::bce::BCEKernelOp, E>

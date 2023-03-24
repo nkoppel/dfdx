@@ -50,6 +50,8 @@ macro_rules! length {
     ($x:tt $($xs:tt)*) => {1 + length!($($xs)*)};
 }
 
+pub(crate) use length;
+
 // Defines all reduce/broadcast rules recursively
 macro_rules! broadcast_to_all {
     ([$($s1:ident)*] [$($s2:ident)*] [$($ax:tt)*] [] [$axis:tt $($axes:tt)*]) => {
@@ -78,19 +80,12 @@ pub trait ReduceTopDimsTo<S: Shape>: ReduceShapeTo<S, Self::Ax> {
     type Ax: Axes;
 }
 
-// pub trait ReduceBottomDimsTo<S: Shape>: ReduceShapeTo<S, Self::Ax> {
-    // type Ax: Axes;
-// }
-
 pub trait BroadcastTopDimsTo<S>: BroadcastShapeTo<S, Self::Ax> {
     type Ax: Axes;
 }
 impl<S: Shape + ReduceTopDimsTo<T>, T: Shape> BroadcastTopDimsTo<S> for T {
     type Ax = S::Ax;
 }
-
-// pub trait BroadcastBottomDimsTo<S: Shape + ReduceBottomDimsTo<Self>>: Shape {}
-// impl<S: Shape + ReduceBottomDimsTo<T>, T: Shape> BroadcastBottomDimsTo<S> for T {}
 
 macro_rules! broadcast_top {
     ($ax:ty, [] [$($sh2:ident)*]) => {

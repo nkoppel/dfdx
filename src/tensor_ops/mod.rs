@@ -189,6 +189,7 @@ mod reshape_to;
 mod select_and_gather;
 mod sigmoid;
 mod sin;
+mod slice;
 mod softmax;
 mod sqrt;
 mod square;
@@ -197,6 +198,7 @@ mod stddev_to;
 mod sub;
 mod sum_to;
 mod tanh;
+mod to_dtype;
 mod var_to;
 
 pub use abs::abs;
@@ -239,6 +241,7 @@ pub use reshape_to::ReshapeTo;
 pub use select_and_gather::{GatherTo, SelectTo};
 pub use sigmoid::sigmoid;
 pub use sin::sin;
+pub use slice::slice;
 pub use softmax::softmax;
 pub use sqrt::sqrt;
 pub use square::square;
@@ -247,7 +250,10 @@ pub use stddev_to::StddevTo;
 pub use sub::{sub, TrySub};
 pub use sum_to::SumTo;
 pub use tanh::tanh;
+pub use to_dtype::to_dtype;
 pub use var_to::VarTo;
+
+pub(crate) use to_dtype::ToDtypeKernel;
 
 #[cfg(feature = "nightly")]
 mod conv2d;
