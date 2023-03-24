@@ -42,7 +42,7 @@ pub struct LeakyReLU<E: Dtype>(pub E);
 
 impl<E: Dtype> Default for LeakyReLU<E> {
     fn default() -> Self {
-        // Same as pytorch default 
+        // Same as pytorch default
         LeakyReLU(E::from_f32(1e-2).unwrap())
     }
 }

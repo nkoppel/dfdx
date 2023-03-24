@@ -43,7 +43,7 @@ pub trait BroadcastTo: HasErr + HasShape {
         Self::Shape: BroadcastShapeTo<Dst, Ax>;
 
     /// Same as [BroadcastTo::broadcast], but the axes to broadcast are automatically chosen
-    /// to be the top axes of the resulting tensor.
+    /// to be the top axes of the output tensor.
     /// ```rust
     /// # use dfdx::prelude::*;
     /// # let dev: Cpu = Default::default();
@@ -83,7 +83,53 @@ pub trait BroadcastTo: HasErr + HasShape {
         dst: &Dst,
     ) -> Result<Self::WithShape<Dst>, Self::Err>
     where
-        Self::Shape: BroadcastTopDimsTo<Dst>
+        Self::Shape: BroadcastTopDimsTo<Dst>,
+    {
+        self.try_broadcast_like(dst)
+    }
+
+    /// Same as [BroadcastTo::broadcast], but the axes to broadcast are automatically chosen
+    /// to be the bottom axes of the output tensor.
+    /// ```rust
+    /// # use dfdx::prelude::*;
+    /// # let dev: Cpu = Default::default();
+    /// let a: Tensor<Rank1<3>, f32, _> = dev.tensor([1., 2., 3.,]);
+    ///
+    /// // broadcast axis 1
+    /// let b = a.clone().broadcast_bottom_dims::<Rank2<3, 3>>();
+    /// assert_eq!(b.array(), [[1.; 3], [2.; 3], [3.; 3]]);
+    ///
+    /// // broadcast axes 1 and 2
+    /// let b = a.clone().broadcast_bottom_dims::<Rank3<3, 3, 3>>();
+    /// assert_eq!(b.array(), [[[1.; 3]; 3], [[2.; 3]; 3], [[3.; 3]; 3]]);
+    /// ```
+    fn broadcast_bottom_dims<Dst: ConstShape>(self) -> Self::WithShape<Dst>
+    where
+        Self::Shape: BroadcastBottomDimsTo<Dst>,
+    {
+        self.try_broadcast_like(&Default::default()).unwrap()
+    }
+    /// Fallible version of [BroadcastTo::broadcast_bottom_dims]
+    fn try_broadcast_bottom_dims<Dst: ConstShape>(self) -> Result<Self::WithShape<Dst>, Self::Err>
+    where
+        Self::Shape: BroadcastBottomDimsTo<Dst>,
+    {
+        self.try_broadcast_like(&Default::default())
+    }
+    /// Same as [BroadcastTo::broadcast_bottom_dims], but the target shape is given
+    fn broadcast_bottom_dims_like<Dst: Shape>(self, dst: &Dst) -> Self::WithShape<Dst>
+    where
+        Self::Shape: BroadcastBottomDimsTo<Dst>,
+    {
+        self.try_broadcast_like(dst).unwrap()
+    }
+    /// fallible version of [BroadcastTo::broadcast_bottom_dims_like]
+    fn try_broadcast_bottom_dims_like<Dst: Shape>(
+        self,
+        dst: &Dst,
+    ) -> Result<Self::WithShape<Dst>, Self::Err>
+    where
+        Self::Shape: BroadcastBottomDimsTo<Dst>,
     {
         self.try_broadcast_like(dst)
     }

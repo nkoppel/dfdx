@@ -19,8 +19,10 @@ mod shape;
 mod slice;
 
 pub(crate) use axes::Axes;
+#[allow(unused_imports)]
 pub(crate) use broadcasts::{
-    BroadcastShapeTo, BroadcastStridesTo, ReduceShape, ReduceShapeTo, ReduceStridesTo, ReduceTopDimsTo, BroadcastTopDimsTo,
+    BroadcastBottomDimsTo, BroadcastShapeTo, BroadcastStridesTo, BroadcastTopDimsTo,
+    ReduceBottomDimsTo, ReduceShape, ReduceShapeTo, ReduceStridesTo, ReduceTopDimsTo,
 };
 pub(crate) use permutes::{PermuteShapeTo, PermuteStridesTo};
 pub(crate) use realize::RealizeShapeTo;
