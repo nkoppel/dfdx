@@ -15,8 +15,8 @@ macro_rules! has_kernels {
     ($($dtype:ty),*) => {
         $(
         impl HasCudaKernel<$dtype> for Cuda {
-            const MOD: &'static str = concat!("slice_", stringify!($dtype));
-            const FNS: &'static [&'static str] = &[concat!("slice_fwd_", stringify!($dtype))];
+            const MOD: &'static str = concat!("reshape_", stringify!($dtype));
+            const FNS: &'static [&'static str] = &[concat!("reshape_fwd_", stringify!($dtype))];
         }
         )*
     }
